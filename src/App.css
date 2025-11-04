@@ -1,0 +1,42 @@
+body { font-family: Arial, sans-serif; background:#f2f2f2; }
+
+.app-container { text-align: center; padding: 20px; }
+h1 { color: green; margin-bottom: 20px; }
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 10px auto;
+  width: 250px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+}
+
+.card h3 { margin:5px; color:#333; }
+
+.alert-box { margin-top: 20px; color: red; font-weight:bold; }
+
+.form-container {
+  width: 350px;
+  margin: 100px auto;
+  padding: 20px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+form input {
+  width: 90%; padding: 10px; margin: 8px 0;
+  border: 1px solid #ccc; border-radius: 5px;
+}
+
+form button {
+  width: 95%; padding: 10px; background: green;
+  color: white; border: none; border-radius: 5px; margin-top: 10px;
+  cursor: pointer;
+}
+
+form button:hover { background: darkgreen; }
+.error { color: red; margin-top: 10px; }
+span { color: blue; cursor: pointer; text-decoration: underline; }
