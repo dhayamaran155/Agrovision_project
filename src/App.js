@@ -1,59 +1,60 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import { LanguageProvider } from "./LanguageContext";
+import { AuthProvider } from "./AuthContext";
+import { Layout } from "./components/layout/layout";
+import Home from "./Home";
+import { Dashboard } from "./pages/Dashboard";
+import Login from "./Login";
+import Register from "./Register";
+import Dashboards  from "./Dashboards";
+import Marketplace from "./marketplace";
+import LearningHub from "./Learning_hub";
+import DiseaseUpload from "./Dieases_Detection";
+import Yield from "./yield_prediction";
+import Profile from "./profile";
+import Community from "./Community";
+import { Chatbot } from "./pages/Chatbot";
+import { CropPlanning } from "./pages/CropPlanning";
+import { DiseaseDetection } from "./pages/DiseaseDetection";
+import { Schemes } from "./pages/Schemes";
+import { Videos } from "./pages/Videos";
 
 
 
-function Home() {
-  const [sensorData, setSensorData] = useState({
-    soil: 0,
-    temperature: 0,
-    humidity: 0,
-    light: 0,
-  });
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSensorData({
-        soil: Math.floor(Math.random() * 101),
-        temperature: Math.floor(Math.random() * 45),
-        humidity: Math.floor(Math.random() * 101),
-        light: Math.floor(Math.random() * 1001),
-      });
-    }, 3000);
 
-    return () => clearInterval(interval);
-  }, []);
 
+
+
+
+
+function App() {
+  
   return (
-    <div className="app-container">
-      <h1>🌱 AGROVISION Dashboard</h1>
-
-      <div className="card-container">
-        <div className="card">
-          <h3>Soil Moisture</h3>
-          <p>{sensorData.soil}%</p>
-        </div>
-        <div className="card">
-          <h3>Temperature</h3>
-          <p>{sensorData.temperature} °C</p>
-        </div>
-        <div className="card">
-          <h3>Humidity</h3>
-          <p>{sensorData.humidity}%</p>
-        </div>
-        <div className="card">
-          <h3>Light</h3>
-          <p>{sensorData.light} lux</p>
-        </div>
-      </div>
-
-      <div className="alert-box">
-        {sensorData.soil < 30 && <p>⚠️ Soil too dry!</p>}
-        {sensorData.temperature > 38 && <p>⚠️ High temperature!</p>}
-        {sensorData.humidity < 20 && <p>⚠️ Humidity too low!</p>}
-        {sensorData.light > 800 && <p>☀️ Too much light!</p>}
-      </div>
-    </div>
+    <LanguageProvider>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboards" element={<Dashboards />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/Learning_hub" element={<LearningHub />} />
+          <Route path="/Dieases_Detection" element={<DiseaseUpload />} />
+          <Route path="/prediction" element={<Yield />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/Community" element={<Community />} />
+          <Route path="/chatbot" element={<Chatbot />} />
+          <Route path="/crop" element={<CropPlanning />} />
+          <Route path="/disease" element={<DiseaseDetection />} />
+          <Route path="/schemes" element={<Schemes />} />
+          <Route path="/videos" element={<Videos />} />
+        </Routes>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
 
-export default Home;
+export default App;

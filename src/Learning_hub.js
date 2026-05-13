@@ -1,132 +1,111 @@
 import React, { useState } from "react";
+import { useLanguage } from "./LanguageContext";
 
 function LearningHub() {
+  const { language, toggleLanguage, t } = useLanguage();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
 
-  // ✅ Expanded Agriculture Learning Courses (15 total)
-  const courses = [
+  // Base courses data
+  const baseCourses = [
     {
       id: 1,
-      title: "Organic Farming Basics",
-      description: "Learn the fundamentals of organic farming and soil health.",
       image: "/learning_hub image/Organic Farming Basics.jpeg",
       category: "Organic",
       progress: 40,
     },
     {
       id: 2,
-      title: "Pest Management in Crops",
-      description: "Effective strategies to manage pests without chemicals.",
       image: "/learning_hub image/Pest Management in Crops.jpeg",
       category: "Pest",
       progress: 20,
     },
     {
       id: 3,
-      title: "Irrigation Techniques",
-      description: "Modern irrigation techniques to save water and improve yield.",
       image: "/learning_hub image/Irrigation Techniques.jpeg",
       category: "Irrigation",
       progress: 75,
     },
     {
       id: 4,
-      title: "Crop Rotation Strategies",
-      description: "Increase soil fertility and reduce diseases with crop rotation.",
       image: "/learning_hub image/Crop Rotation Strategies.jpeg",
       category: "Soil",
       progress: 55,
     },
     {
       id: 5,
-      title: "Soil Fertility & Nutrients",
-      description: "Understand soil nutrients and fertilizers for better crops.",
       image: "/learning_hub image/Soil Fertility & Nutrients.jpeg",
       category: "Soil",
       progress: 90,
     },
     {
       id: 6,
-      title: "Greenhouse Farming & Conservatory",
-      description: "Master controlled-environment farming for year-round yield.",
       image: "/learning_hub image/Greenhouse Farming.jpeg",
       category: "Organic",
       progress: 60,
     },
     {
       id: 7,
-      title: "Composting & Vermiculture",
-      description: "Convert waste into organic manure through composting methods.",
       image: "/learning_hub image/Composting & Vermiculture.jpeg",
       category: "Soil",
       progress: 30,
     },
-     {
+    {
       id: 8,
-      title: "Beekeeping & Honey Production",
-      description: "Basics of apiculture for honey and pollination benefits.",
       image: "/learning_hub image/Beekeeping & Honey Production.jpeg",
       category: "Livestock",
       progress: 55,
     },
-     {
+    {
       id: 9,
-      title: "Dairy & Livestock Management",
-      description: "Best practices for livestock care and dairy production.",
       image: "/learning_hub image/Dairy & Livestock Management.jpeg",
       category: "Livestock",
       progress: 25,
     },
     {
       id: 10,
-      title: "Hydroponics & Soilless Farming",
-      description: "Grow crops without soil using water and nutrients.",
       image: "/learning_hub image/Hydroponics & Soilless Farming.jpeg",
       category: "Technology",
       progress: 65,
     },
     {
       id: 11,
-      title: "Agroforestry Systems",
-      description: "Integrate trees and crops for sustainable land use.",
       image: "/learning_hub image/Agroforestry Systems.jpeg",
       category: "Organic",
       progress: 35,
     },
     {
       id: 12,
-      title: "Climate-Smart Agriculture",
-      description: "Adapt farming methods to climate change challenges.",
       image: "/learning_hub image/Climate-Smart Agriculture.jpeg",
       category: "Organic",
       progress: 80,
     },
     {
       id: 13,
-      title: "Post-Harvest Management",
-      description: "Reduce losses and improve crop storage techniques.",
       image: "/learning_hub image/Post-Harvest Management.jpeg",
       category: "Storage",
       progress: 70,
     },
     {
       id: 14,
-      title: "Aquaculture & Fisheries",
-      description: "Learn sustainable methods of fish and prawn farming.",
       image: "/learning_hub image/Aquaculture & Fisheries.jpeg",
       category: "Livestock",
       progress: 45,
     },
     {
       id: 15,
-      title: "Precision Agriculture",
-      description: "Use technology like drones & IoT for smarter farming.",
       image: "/learning_hub image/Precision Agriculture.jpeg",
       category: "Technology",
       progress: 50,
     },
   ];
+
+  // Translated courses
+  const courses = baseCourses.map((course, index) => ({
+    ...course,
+    title: t.learningHub.courses[index].title,
+    description: t.learningHub.courses[index].description,
+  }));
 
   // ✅ Filtering Logic
   const filteredCourses = courses.filter(
@@ -137,13 +116,13 @@ function LearningHub() {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>🌱 AgroVision Learning Hub</h1>
+      <h1 style={styles.title}>{t.learningHub.title}</h1>
 
       {/* Search + Category Filter */}
       <div style={styles.filters}>
         <input
           type="text"
-          placeholder="🔍 Search courses..."
+          placeholder={t.learningHub.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={styles.searchBar}
@@ -154,15 +133,17 @@ function LearningHub() {
           onChange={(e) => setCategory(e.target.value)}
           style={styles.dropdown}
         >
-          <option value="All">All Categories</option>
-          <option value="Organic">Organic</option>
-          <option value="Pest">Pest</option>
-          <option value="Irrigation">Irrigation</option>
-          <option value="Soil">Soil</option>
-          <option value="Technology">Technology</option>
-          <option value="Livestock">Livestock</option>
-          <option value="Storage">Storage</option>
+          <option value="All">{t.learningHub.allCategories}</option>
+          {Object.entries(t.learningHub.categories).map(([key, value]) => (
+            <option key={key} value={key}>
+              {value}
+            </option>
+          ))}
         </select>
+
+        <button onClick={toggleLanguage} style={styles.langBtn}>
+          {language === "en" ? "தமிழ்" : "English"}
+        </button>
       </div>
 
       {/* Courses Section */}
@@ -174,7 +155,7 @@ function LearningHub() {
               <h3 style={styles.cardTitle}>{course.title}</h3>
               <p style={styles.cardDesc}>{course.description}</p>
 
-              {/* Progress Bar */}
+              {/* Progress Bar
               <div style={styles.progressBar}>
                 <div
                   style={{
@@ -183,13 +164,37 @@ function LearningHub() {
                   }}
                 ></div>
               </div>
-              <p style={styles.progressText}>{course.progress}% Completed</p>
+              <p style={styles.progressText}>
+                {course.progress}
+                {t.learningHub.completed}
+              </p> */}
 
-              <button style={styles.button}>📖 Start Learning</button>
+             
+              <a
+                href={`https://www.google.com/search?q=${encodeURIComponent(
+                  course.title
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={styles.linkButton}
+              >
+                {t.learningHub.learnMore}
+              </a>
+              <a
+                href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
+                  course.title.split(" / ")[0]
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={styles.youtubeButton}
+              >
+                {t.learningHub.watchVideo}
+                Watch on YouTube
+              </a>
             </div>
           ))
         ) : (
-          <p style={styles.noResults}>❌ No courses found</p>
+          <p style={styles.noResults}>{t.learningHub.noResults}</p>
         )}
       </div>
     </div>
@@ -237,6 +242,17 @@ const styles = {
     fontSize: "14px",
     cursor: "pointer",
   },
+  langBtn: {
+    padding: "10px 18px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#28a745",
+    color: "white",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "bold",
+    transition: "background 0.3s",
+  },
   coursesGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
@@ -275,6 +291,36 @@ const styles = {
     borderRadius: "8px",
     backgroundColor: "#28a745",
     color: "white",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "bold",
+    transition: "background 0.3s",
+  },
+  linkButton: {
+    display: "inline-block",
+    marginTop: "12px",
+    marginLeft: "10px",
+    padding: "10px 18px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#007bff",
+    color: "white",
+    textDecoration: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "bold",
+    transition: "background 0.3s",
+  },
+  youtubeButton: {
+    display: "inline-block",
+    marginTop: "12px",
+    marginLeft: "10px",
+    padding: "10px 18px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#ff0000",
+    color: "white",
+    textDecoration: "none",
     cursor: "pointer",
     fontSize: "14px",
     fontWeight: "bold",

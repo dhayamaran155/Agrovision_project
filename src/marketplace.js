@@ -1,8 +1,17 @@
 import React, { useState } from "react";
+import "./marketplace.css";
 
 function Marketplace() {
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
+  const [quantities, setQuantities] = useState({});
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  const [customer, setCustomer] = useState({
+    name: "",
+    phone: "",
+    address: "",
+  });
 
   const products = [
     { id: 1, name: "Organic Rice", price: 500, image: "/markketplace image/rice.jpg" },
@@ -13,224 +22,182 @@ function Marketplace() {
     { id: 6, name: "Green Gram", price: 150, image: "/markketplace image/Green Gram.jpeg" },
     { id: 7, name: "Black Gram", price: 160, image: "/markketplace image/Black Gram.jpeg" },
     { id: 8, name: "Red Gram (Toor Dal)", price: 170, image: "/markketplace image/Red Gram.jpeg" },
-    { id: 9, name: "Chickpeas ", price: 140, image: "/markketplace image/Chickpeas.jpeg" },
-    { id: 10, name: "Groundnuts ", price: 130, image: "/markketplace image/Groundnuts.jpeg" },
-    { id: 11, name: "Fresh Onions ", price: 250, image: "/markketplace image/Fresh Onions.jpeg" },
-    { id: 12, name: "Fresh Potatoes ", price: 200, image: "/markketplace image/Fresh Potatoes.jpeg" },
-    { id: 13, name: "Tomatoes ", price: 80, image: "/markketplace image/Tomatoes.jpeg" },
-    { id: 14, name: "Brinjal ", price: 60, image: "/markketplace image/Brinjal.jpeg" },
-    { id: 15, name: "Ladies Finger (Okra) ", price: 70, image: "/markketplace image/Ladies Finger.jpeg" },
-    { id: 16, name: "Cabbage (1pc)", price: 50, image: "/markketplace image/Cabbage.jpeg" },
-    { id: 17, name: "Cauliflower (1pc)", price: 60, image: "/markketplace image/Cauliflower.jpeg" },
-    { id: 18, name: "Bananas (1 dozen)", price: 80, image: "/markketplace image/Bananas.jpeg" },
+    { id: 9, name: "Chickpeas", price: 140, image: "/markketplace image/Chickpeas.jpeg" },
+    { id: 10, name: "Groundnuts", price: 130, image: "/markketplace image/Groundnuts.jpeg" },
+    { id: 11, name: "Fresh Onions", price: 250, image: "/markketplace image/Fresh Onions.jpeg" },
+    { id: 12, name: "Fresh Potatoes", price: 200, image: "/markketplace image/Fresh Potatoes.jpeg" },
+    { id: 13, name: "Tomatoes", price: 80, image: "/markketplace image/Tomatoes.jpeg" },
+    { id: 14, name: "Brinjal", price: 60, image: "/markketplace image/Brinjal.jpeg" },
+    { id: 15, name: "Ladies Finger", price: 70, image: "/markketplace image/Ladies Finger.jpeg" },
+    { id: 16, name: "Cabbage", price: 50, image: "/markketplace image/Cabbage.jpeg" },
+    { id: 17, name: "Cauliflower", price: 60, image: "/markketplace image/Cauliflower.jpeg" },
+    { id: 18, name: "Bananas", price: 80, image: "/markketplace image/Bananas.jpeg" },
     { id: 19, name: "Mangoes", price: 200, image: "/markketplace image/Mangoes.jpeg" },
-    { id: 20, name: "Coconut (1pc)", price: 40, image: "/markketplace image/coconut.jpeg" },
+    { id: 20, name: "Coconut", price: 40, image: "/markketplace image/coconut.jpeg" },
   ];
-
-  const addToCart = (product, qty) => {
-    if (qty < 1) return; // don't allow zero qty
-    setCart([...cart, { ...product, quantity: qty }]);
-  };
-
-  const removeFromCart = (index) => setCart(cart.filter((_, i) => i !== index));
-
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // track qty for each product
-  const [quantities, setQuantities] = useState({});
+  const increaseQty = (id) =>
+    setQuantities({ ...quantities, [id]: (quantities[id] || 1) + 1 });
 
-  const handleQtyChange = (id, value) => {
-    setQuantities({ ...quantities, [id]: value });
+  const decreaseQty = (id) => {
+    const q = quantities[id] || 1;
+    if (q > 1) setQuantities({ ...quantities, [id]: q - 1 });
+  };
+
+  const addToCart = (product, qty) => {
+    setCart([...cart, { ...product, quantity: qty }]);
+  };
+
+  const removeFromCart = (index) =>
+    setCart(cart.filter((_, i) => i !== index));
+
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  /* ================= RAZORPAY PAYMENT ================= */
+
+  const payNow = async () => {
+    if (!customer.name || !customer.phone || !customer.address) {
+      alert("Please fill all customer details");
+      return;
+    }
+
+    const res = await fetch("http://127.0.0.1:8000/api/orders/payment/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: totalPrice }),
+    });
+
+    const data = await res.json();
+
+    const options = {
+      key: data.key,
+      amount: data.amount,
+      currency: "INR",
+      name: "AgroVision",
+      description: "Marketplace Order",
+      order_id: data.order_id,
+      handler: function () {
+        alert("Payment Successful 🎉");
+        setCart([]);
+        setShowCheckout(false);
+      },
+      prefill: {
+        name: customer.name,
+        contact: customer.phone,
+      },
+      theme: { color: "#2e7d32" },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>🌾 Marketplace</h1>
+    <div className="marketplace-container">
+      <h1 className="marketplace-title">🌾 AgroVision Marketplace</h1>
 
-      {/* Search Bar */}
       <input
+        className="marketplace-search"
         type="text"
-        placeholder=" Search products..."
+        placeholder="Search products..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        style={styles.search}
       />
 
-      {/* Product Grid */}
-      <div style={styles.productsGrid}>
-        {filteredProducts.map((product) => (
-          <div key={product.id} style={styles.card}>
-            <img src={product.image} alt={product.name} style={styles.image} />
-            <h3>{product.name}</h3>
-            <p style={styles.price}>₹{product.price}</p>
+      <div className="marketplace-main">
+        <div className="marketplace-products">
+          <div className="products-grid">
+            {filteredProducts.map((p) => (
+              <div key={p.id} className="product-card">
+                <img src={p.image} alt={p.name} className="product-image" />
+                <h3 className="product-name">{p.name}</h3>
+                <p className="product-price">₹{p.price}</p>
 
-            {/* Quantity Input */}
-            <input
-              type="number"
-              min="1"
-              value={quantities[product.id] || 1}
-              onChange={(e) => handleQtyChange(product.id, parseInt(e.target.value))}
-              style={styles.qtyInput}
-            />
+                <div className="quantity-controls">
+                  <button className="qty-btn" onClick={() => decreaseQty(p.id)}>−</button>
+                  <span className="quantity-display">{quantities[p.id] || 1}</span>
+                  <button className="qty-btn" onClick={() => increaseQty(p.id)}>+</button>
+                </div>
 
-            <button
-              style={styles.button}
-              onClick={() => addToCart(product, quantities[product.id] || 1)}
-            >
-              Add {quantities[product.id] } Kg
+                <button
+                  className="add-to-cart-btn"
+                  onClick={() => addToCart(p, quantities[p.id] || 1)}
+                >
+                  Add to Cart
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="marketplace-cart">
+          <h2 className="cart-title">🛒 Your Cart</h2>
+          {cart.length === 0 ? (
+            <p className="cart-empty">No items in cart</p>
+          ) : (
+            <>
+              {cart.map((item, i) => (
+                <div key={i} className="cart-item">
+                  <span className="cart-item-name">{item.name} ({item.quantity})</span>
+                  <span className="cart-item-price">₹{item.price * item.quantity}</span>
+                  <button className="remove-btn" onClick={() => removeFromCart(i)}>×</button>
+                </div>
+              ))}
+              <h3 className="cart-total">Total: ₹{totalPrice}</h3>
+              <button className="checkout-btn" onClick={() => setShowCheckout(true)}>
+                Checkout
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* CHECKOUT MODAL */}
+      {showCheckout && (
+        <div className="modal-overlay">
+          <div className="checkout-modal">
+            <h2 className="modal-title">Checkout</h2>
+
+            <div className="checkout-form">
+              <input
+                type="text"
+                placeholder="Name"
+                value={customer.name}
+                onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+              />
+              <input
+                type="tel"
+                placeholder="Phone"
+                value={customer.phone}
+                onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
+              />
+              <textarea
+                placeholder="Address"
+                value={customer.address}
+                onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
+              />
+            </div>
+
+            <p className="modal-total"><b>Total:</b> ₹{totalPrice}</p>
+
+            <button className="pay-btn" onClick={payNow}>
+              Pay with Razorpay
+            </button>
+            <button className="cancel-btn" onClick={() => setShowCheckout(false)}>
+              Cancel
             </button>
           </div>
-        ))}
-      </div>
-
-      {/* Cart - Always Visible */}
-      <div style={styles.cartBox}>
-        <h2> Your Cart</h2>
-        {cart.length === 0 ? (
-          <p>No items in cart</p>
-        ) : (
-          <>
-            <ul style={styles.cartList}>
-              {cart.map((item, index) => (
-                <li key={index} style={styles.cartItem}>
-                  <span>
-                    {item.name} ({item.quantity} Kg)
-                  </span>
-                  <span>₹{item.price * item.quantity}</span>
-                  <button style={styles.removeButton} onClick={() => removeFromCart(index)}>
-                    Cancel
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <h3 style={styles.total}>Total: ₹{totalPrice}</h3>
-             <button style={styles.buyButton}>Buy Now</button>
-          </>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
-
-// Styles
-const styles = {
-  container: {
-    padding: "20px",
-    fontFamily: "Segoe UI, sans-serif",
-    minHeight: "100vh",
-    background: "linear-gradient(to right, #d4fc79, #96e6a1)", // soft gradient
-  },
-  title: {
-    textAlign: "center",
-    marginBottom: "20px",
-    color: "#2e7d32",
-    fontSize: "2.2rem",
-    fontWeight: "bold",
-  },
-  search: {
-    padding: "10px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    marginBottom: "20px",
-    fontSize: "1rem",
-    outline: "none",
-    width: "100%",
-    maxWidth: "400px",
-    display: "block",
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  productsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-    gap: "20px",
-  },
-  card: {
-    background: "#fff",
-    borderRadius: "12px",
-    padding: "15px",
-    textAlign: "center",
-    boxShadow: "0px 4px 10px rgba(0,0,0,0.15)",
-  },
-  image: {
-    width: "100%",
-    height: "150px",
-    objectFit: "cover",
-    borderRadius: "10px",
-    marginBottom: "10px",
-  },
-  price: {
-    fontWeight: "bold",
-    color: "#388e3c",
-  },
-  qtyInput: {
-    width: "40px",
-    padding: "5px",
-    marginTop: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "6px",
-    textAlign: "center",
-  },
-  button: {
-    marginTop: "10px",
-    marginLeft:"10px",
-    padding: "8px 15px",
-    border: "none",
-    borderRadius: "6px",
-    backgroundColor: "#4caf50",
-    color: "white",
-    cursor: "pointer",
-  },
-  cartBox: {
-    marginTop: "30px",
-    padding: "20px",
-    background: "#fff",
-    borderRadius: "12px",
-    boxShadow: "0px 4px 8px rgba(0,0,0,0.2)",
-  },
-  cartList: {
-    listStyle: "none",
-    padding: 0,
-    margin: "10px 0",
-  },
-  cartItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "8px 0",
-    borderBottom: "1px solid #eee",
-  },
-  removeButton: {
-    background: "#e53935",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    padding: "4px 8px",
-    cursor: "pointer",
-  },
-  total: {
-    marginTop: "15px",
-    textAlign: "right",
-    fontWeight: "bold",
-    color: "#2e7d32",
-  },
-    buyButton: {
-    marginTop: "15px",
-    marginLeft:"50%",
-    padding: "12px",
-    width: "150px",
-    background: "#04222eff",
-    color: "#fff",
-    fontSize: "1.2rem",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-  },
-
-};
 
 export default Marketplace;

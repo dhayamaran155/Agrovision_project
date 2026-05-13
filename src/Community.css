@@ -1,0 +1,186 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #e5ddd5;
+}
+
+/* Container */
+.community-container {
+  max-width: 900px;
+  margin: auto;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #efeae2;
+}
+
+/* Header */
+.community-header {
+  background: #075e54;
+  color: white;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Language button */
+.lang-btn {
+  background: white;
+  color: #075e54;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* New post box */
+.new-post-box {
+  background: white;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+.new-post-box input,
+.new-post-box textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #f0f0f0;
+  font-size: 14px;
+}
+
+.new-post-box textarea {
+  resize: none;
+  height: 60px;
+}
+
+/* Voice box */
+.voice-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.voice-box button {
+  background: #128c7e;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.voice-box audio {
+  max-width: 100%;
+  height: 30px;
+}
+
+/* Send button */
+.send-btn {
+  align-self: flex-end;
+  background: #25d366;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Posts */
+.posts-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* Post card */
+.post-card {
+  background: #dcf8c6;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  max-width: 80%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* User */
+.post-user {
+  font-size: 12px;
+  font-weight: bold;
+  color: #075e54;
+}
+
+/* Title */
+.post-title {
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+/* Description */
+.post-desc {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+/* Replies */
+.replies {
+  margin-top: 10px;
+}
+
+.reply-bubble {
+  background: white;
+  padding: 8px;
+  border-radius: 8px;
+  margin-top: 6px;
+  font-size: 13px;
+  max-width: 70%;
+}
+
+.reply-bubble span {
+  font-weight: bold;
+  color: #128c7e;
+}
+
+@media (max-width: 640px) {
+  .community-header {
+    padding: 12px;
+    font-size: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .lang-btn {
+    margin-left: auto;
+  }
+
+  .new-post-box {
+    padding: 10px;
+  }
+
+  .voice-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .send-btn {
+    width: 100%;
+  }
+
+  .post-card {
+    max-width: 100%;
+  }
+
+  .reply-bubble {
+    max-width: 100%;
+  }
+}
