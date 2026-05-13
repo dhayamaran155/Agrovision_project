@@ -2,7 +2,6 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "./LanguageContext";
 import { AuthProvider } from "./AuthContext";
-import { Layout } from "./components/layout/layout";
 import Home from "./Home";
 import { Dashboard } from "./pages/Dashboard";
 import Login from "./Login";

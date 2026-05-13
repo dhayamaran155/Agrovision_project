@@ -37,7 +37,7 @@ function Profile() {
         localStorage.removeItem("token");
         window.location.href = "/login";
       });
-  }, []);
+  }, [isLoggedIn]);
 
   // ⏳ Loading state
   if (!user) {
